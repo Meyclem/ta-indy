@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { getFromLocation, WeatherAPIError } from "../../src/services/weather";
+import { getFromLocation, WEATHER_CONDITIONS, WeatherAPIError } from "../../src/services/weather";
 
 import type { MockedFunction } from "vitest";
 
@@ -56,12 +56,11 @@ describe("Weather Service", () => {
       const weather = {
         weather: [
           {
-            id: 501,
-            main: "Rain",
+            main: WEATHER_CONDITIONS.RAIN,
           },
         ],
         main: {
-          temp: 29.48,
+          temp: 30,
         },
       };
       mockFetch(london, 200);

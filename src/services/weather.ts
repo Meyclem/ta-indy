@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-enum CONDITIONS {
+enum WEATHER_CONDITIONS {
   ATMOSPHERE = "Atmosphere",
   CLEAR = "Clear",
   CLOUDS = "Clouds",
@@ -11,8 +11,8 @@ enum CONDITIONS {
   THUNDERSTORM = "Thunderstorm",
 }
 
-const ConditionsEnum = z.nativeEnum(CONDITIONS);
-type Condition = z.infer<typeof ConditionsEnum>;
+const weatherConditions = z.nativeEnum(WEATHER_CONDITIONS);
+type Condition = z.infer<typeof weatherConditions>;
 
 type Weather = {
   weather: Condition;
@@ -65,7 +65,7 @@ async function getWeatherFromLatLon(lat: number, lon: number): Promise<Weather> 
     .object({
       weather: z.array(
         z.object({
-          main: ConditionsEnum,
+          main: weatherConditions,
         }),
       ),
       main: z.object({
@@ -96,5 +96,5 @@ async function getFromLocation(city: string): Promise<Weather> {
   return getWeatherFromLatLon(lat, lon);
 }
 
-export { getFromLocation, CONDITIONS, WeatherAPIError };
+export { getFromLocation, WEATHER_CONDITIONS, WeatherAPIError };
 export type { Condition, Weather };
