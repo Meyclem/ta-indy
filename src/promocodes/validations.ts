@@ -8,13 +8,13 @@ import {
   Promocode,
 } from "./model.js";
 
-function promocodeValidation(promocode: Promocode): Promocode {
+function promocodeValidation(promocodePayload: Promocode): Promocode {
   return z
     .object({
       name: z.string(),
       advantage: z.object({ percent: z.number() }),
       /**
-       * 👀 I added a custom refinement to validate the list of conditions
+       * 👀 I added a custom Zod refinement to validate the list of conditions
        * because the recursive type validation of Zod is limited: https://zod.dev/?id=recursive-types
        * the `refine` method allows us to add custom validation logic and with more time
        * I could have added more specific error messages depending on the condition type.
@@ -23,9 +23,15 @@ function promocodeValidation(promocode: Promocode): Promocode {
         .array(z.any())
         .refine(conditionValidation, "Invalid list of conditions"),
     })
-    .parse(promocode);
+    .parse(promocodePayload);
 }
 
+/**
+ * Validates an array of conditions prior to creating a new Promocode
+ *
+ * @param conditions - An array of conditions to be validated against typed schemas.
+ * @returns A boolean indicating whether all conditions are valid.
+ */
 function conditionValidation(conditions: Condition[]): boolean {
   return conditions.every((condition) => {
     if ("age" in condition) {

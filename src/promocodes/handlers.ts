@@ -31,10 +31,7 @@ function create(database: InMemoryDatabase): Handler {
 function validate(database: InMemoryDatabase): Handler {
   return async function (request: Request, response: Response) {
     try {
-      const {
-        promocode_name: name,
-        arguments: { age, town },
-      } = z
+      const body = z
         .object({
           promocode_name: z.string(),
           arguments: z.object({
@@ -43,6 +40,11 @@ function validate(database: InMemoryDatabase): Handler {
           }),
         })
         .parse(request.body);
+
+      const {
+        promocode_name: name,
+        arguments: { age, town },
+      } = body;
 
       /**
        * 👀 I decided the check if the weather based on the presence of the town parameter
@@ -60,10 +62,6 @@ function validate(database: InMemoryDatabase): Handler {
       const context = {
         age,
         date: new Date(),
-      };
-
-      const results = validateCondition(promocode.restrictions, {
-        ...context,
         ...(weather && town
           ? {
               weather: {
@@ -73,13 +71,22 @@ function validate(database: InMemoryDatabase): Handler {
               },
             }
           : {}),
-      });
+      };
+
+      const results = validateCondition(promocode.restrictions, context);
+
+      if (results.success) {
+        return response.status(200).json({
+          promocode_name: promocode.name,
+          status: "accepted",
+          advantage: promocode.advantage,
+        });
+      }
 
       return response.status(200).json({
         promocode_name: promocode.name,
-        status: results.success ? "accepted" : "rejected",
-        ...(results.success && { advantage: promocode.advantage }),
-        ...(!results.success && { reasons: results.reasons }),
+        status: "rejected",
+        reasons: results.reasons,
       });
     } catch (error) {
       if (error instanceof z.ZodError) {

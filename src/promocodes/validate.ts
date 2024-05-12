@@ -47,10 +47,17 @@ function validateDate(
     );
   }
 
+  if (reasons.length > 0) {
+    return {
+      condition: "date",
+      success: false,
+      reasons,
+    };
+  }
+
   return {
     condition: "date",
-    success: reasons.length === 0,
-    ...(reasons.length > 0 && { reasons }),
+    success: true,
   };
 }
 
@@ -83,10 +90,17 @@ function validateNumber(
     reasons.push(`Given ${type} ${n} is not less than ${condition.lt}`);
   }
 
+  if (reasons.length > 0) {
+    return {
+      condition: type,
+      success: false,
+      reasons,
+    };
+  }
+
   return {
     condition: type,
-    success: reasons.length === 0,
-    ...(reasons.length > 0 && { reasons }),
+    success: true,
   };
 }
 
@@ -116,13 +130,28 @@ function validateWeather(
     }
   }
 
+  if (reasons.length > 0) {
+    return {
+      condition: "weather",
+      success: false,
+      reasons,
+    };
+  }
+
   return {
     condition: "weather",
-    success: reasons.length === 0,
-    ...(reasons.length > 0 && { reasons }),
+    success: true,
   };
 }
 
+/**
+ * Validates the given condition against the provided context.
+ *
+ * @param condition - The condition to validate. It can be a single condition or an array of conditions.
+ * @param context - The context against which the condition is validated: e.g: { age: 25, weather: { main: "Clear", temp: 10, city: "London" }
+ * @returns The validation result, indicating whether the condition is valid or not and the reasons if it's not.
+ * @throws {ValidationError} If the condition is invalid.
+ */
 function validateCondition(
   condition: Condition | Condition[],
   context: Context,
@@ -179,12 +208,14 @@ function validateCondition(
      * 👀 The case where the condition is an array of conditions only happens
      * when the object is the 'restrictions' property of a promocode.
      */
-    const result = condition.map((c) => validateCondition(c, context));
+    const results = condition.map((subCondition) =>
+      validateCondition(subCondition, context),
+    );
 
     return {
-      condition: "main",
-      success: result.some((result) => result.success),
-      reasons: result,
+      condition: "restrictions",
+      success: results.some((result) => result.success),
+      reasons: results,
     };
   }
 

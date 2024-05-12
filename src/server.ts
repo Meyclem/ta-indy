@@ -6,6 +6,12 @@ import morgan from "morgan";
 import InMemoryDatabase from "./inmemory-database.js";
 import promocodeHandlers from "./promocodes/handlers.js";
 
+/**
+ * Creates and configures the Express app.
+ *
+ * @param {InMemoryDatabase} database - The in-memory database instance.
+ * @returns {express.Application} The configured Express app.
+ */
 function createApp(database: InMemoryDatabase) {
   const app = express();
 

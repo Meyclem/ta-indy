@@ -99,8 +99,8 @@ async function getWeatherFromLatLon(
 
 /**
  * Retrieves weather information based on the provided city.
- * @param city - The name of the city.
- * @returns A Promise that resolves to the weather information for the city.
+ * @param city - The name of the city for which to retrieve weather information
+ * @returns A Promise that resolves to the weather information for the city (condition and temperature). See WEATHER_CONDITIONS for possible conditions.
  * @throws {WeatherAPIError} If the weather API returns an error.
  */
 async function getFromLocation(city: string): Promise<Weather> {

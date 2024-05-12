@@ -7,10 +7,11 @@
   "scripts": {
     "build": "rm -rf build && tsc",
     "dev": "tsx watch src/index.ts",
-    "lint": "eslint . --ignore-pattern '**.config.{js,cjs}' --ignore-pattern 'build' --fix",
+    "lint": "eslint . --ignore-pattern '**.config.{js,cjs}' --ignore-pattern 'build'",
     "start": "node build/index.js",
     "test:integration": "vitest run ./tests/integration",
     "test:unit": "vitest run ./tests/unit",
+    "test:watch": "vitest",
     "test": "yarn test:unit && yarn test:integration"
   },
   "devDependencies": {

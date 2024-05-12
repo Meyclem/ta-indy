@@ -54,6 +54,93 @@ yarn dev
 yarn start
 ```
 
+### Endpoints
+
+#### `POST /promocodes`
+
+Creates a new promocode. Accepts a JSON object in the request body with the following type:
+
+```ts
+type Condition = {
+  age?: { eq?: number; gt?: number; lt?: number };
+  date?: { after?: Date; before?: Date };
+  weather?: {
+    is:
+      | "Atmosphere"
+      | "Clear"
+      | "Clouds"
+      | "Drizzle"
+      | "Mist"
+      | "Rain"
+      | "Snow"
+      | "Thunderstorm";
+    temp?: { eq?: number; gt?: number; lt?: number };
+    or?: Condition[]; // min 2 conditions
+    and?: Condition[]; // min 2 conditions
+  };
+};
+
+type Promocode = {
+  name: string;
+  advantage: { percent: number };
+  restrictions: Condition[];
+};
+```
+
+**Responses:**
+
+- ✅ `201`: The promocode was successfully created, and the response body contains the created promocode.
+- ❌ `400`: The request body is invalid.
+
+#### `POST /promocodes/validate`
+
+Validates a promocode. Accepts a JSON object in the request body with the following type:
+
+```ts
+type Context = {
+  age?: number;
+  date?: Date;
+  town?: string;
+};
+```
+
+**Responses:**
+
+- ✅ `200`: The promocode was successfully validated, and the response body contains the promocode name and the advantage.
+  If the promocode is valid:
+
+  ```ts
+  type Response = {
+    promocode_name: string;
+    status: "accepted";
+    advantage: { percent: number };
+  };
+  ```
+
+  If the promocode is invalid:
+
+  ```ts
+  type ValidationResult = {
+    condition: string;
+    success: boolean;
+    reasons?: string[] | ValidationResult[];
+  };
+
+  type Response = {
+    promocode_name: string;
+    status: "rejected";
+    reasons: {
+      condition: string;
+      success: boolean;
+      reasons: string[] | Response[];
+    }[];
+  };
+  ```
+
+- ❌ `400`: The request body is invalid.
+- ❌ `404`: A promocode with the given name does not exist.
+- ❌ `500`: An error occurred while trying to get the weather data.
+
 ### Linter
 
 You can use eslint to help you format your code.
@@ -66,6 +153,12 @@ yarn lint
 
 ```bash
 yarn test
+```
+
+During development process, you can use the watch mode:
+
+```bash
+yarn test:watch
 ```
 
 You can also separate the tests in two parts:
