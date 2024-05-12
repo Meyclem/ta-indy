@@ -19,7 +19,7 @@ The API uses:
 - node `20.12.2`.
 - yarn `1.22.19`
 
-In case you don't have them install, you can
+In case you don't have them installed, you can:
 
 - use [asdf](https://asdf-vm.com/guide/getting-started.html#_2-download-asdf) which will install the right versions based on the `.tool-versions` file.
 - head to the [nodejs](https://nodejs.org/en/download/) and [yarn](https://classic.yarnpkg.com/en/docs/install) websites to install them manually.
@@ -197,7 +197,7 @@ Following this principle, I also wanted to have a recursive way of showing valid
 
 Here is an example of a successful validation:
 
-```json
+```js
 {
   "condition": "age",
   "success": true
@@ -206,7 +206,7 @@ Here is an example of a successful validation:
 
 And here is an example of a failed validation:
 
-```json
+```js
 {
   "condition": "weather",
   "success": false,
@@ -223,7 +223,7 @@ And here is an example of a failed validation:
 
 This result is then used to build the response to the user. For example, given this promocode:
 
-```json
+```js
 {
   "name": "Tens",
   "advantage": { "percent": 10 },
@@ -249,7 +249,7 @@ This result is then used to build the response to the user. For example, given t
 
 #### SUCCESS ✅
 
-```json
+```js
 // request body
 {
   "promocode_name": "Tens",
@@ -269,7 +269,7 @@ This result is then used to build the response to the user. For example, given t
 
 #### FAILURE ❌
 
-```json
+```js
 // request body
 {
   "promocode_name": "Tens",
