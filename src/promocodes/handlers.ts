@@ -1,65 +1,12 @@
 import { Request, Response, Handler } from "express";
 import { z } from "zod";
 
-import {
-  numberComparisonSchema,
-  dateRangeSchema,
-  weatherComparisonSchema,
-  Condition,
-  Promocode,
-} from "./model.js";
+import { promocodeValidation } from "./validations.js";
 import { validateCondition } from "./validate.js";
 import { WeatherAPIError, getFromLocation } from "../services/weather.js";
 import InMemoryDatabase from "../inmemory-database.js";
 
 class PromocodeNotFoundError extends Error {}
-
-function promocodeValidation(promocode: Promocode): Promocode {
-  return z
-    .object({
-      name: z.string(),
-      advantage: z.object({ percent: z.number() }),
-      restrictions: z
-        .array(z.any())
-        .refine(conditionValidation, "Invalid list of conditions"),
-    })
-    .parse(promocode);
-}
-
-function conditionValidation(conditions: Condition[]): boolean {
-  return conditions.every((condition) => {
-    if ("age" in condition) {
-      const result = numberComparisonSchema.safeParse(condition.age);
-      return result.success && Object.keys(result.data).length > 0;
-    }
-
-    if ("date" in condition) {
-      const result = dateRangeSchema.safeParse(condition.date);
-      return result.success && Object.keys(result.data).length > 0;
-    }
-
-    if ("weather" in condition) {
-      const result = weatherComparisonSchema.safeParse(condition.weather);
-      return result.success && Object.keys(result.data).length > 0;
-    }
-
-    if ("or" in condition) {
-      if (!Array.isArray(condition.or) || condition.or.length < 2) {
-        return false;
-      }
-      return conditionValidation(condition.or);
-    }
-
-    if ("and" in condition) {
-      if (!Array.isArray(condition.and) || condition.and.length < 2) {
-        return false;
-      }
-      return conditionValidation(condition.and);
-    }
-
-    return false;
-  });
-}
 
 function create(database: InMemoryDatabase): Handler {
   return async function (request: Request, response: Response) {
@@ -81,7 +28,6 @@ function create(database: InMemoryDatabase): Handler {
   };
 }
 
-// Validate function
 function validate(database: InMemoryDatabase): Handler {
   return async function (request: Request, response: Response) {
     try {
@@ -98,6 +44,11 @@ function validate(database: InMemoryDatabase): Handler {
         })
         .parse(request.body);
 
+      /**
+       * 👀 I decided the check if the weather based on the presence of the town parameter
+       * to avoid making unnecessary requests to the weather API, but it also could have
+       * been done on the first Weather condition validation.
+       */
       const weather = town ? await getFromLocation(town) : null;
 
       const promocode = await database.promocodes.get({ name });

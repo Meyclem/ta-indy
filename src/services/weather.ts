@@ -28,6 +28,10 @@ async function getCoordinates(
     `http://api.openweathermap.org/geo/1.0/direct?q=${city}&appid=${process.env.OPEN_WEATHER_API_KEY}`,
   );
 
+  /**
+   * 👀 Right now, the function only handles 200 and not-200 responses.
+   * It would be better to handle other status codes and react accordingly.
+   */
   if (response.status !== 200) {
     throw new WeatherAPIError("Failed to fetch latitude and longitude");
   }
@@ -60,6 +64,10 @@ async function getWeatherFromLatLon(
     `http://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${process.env.OPEN_WEATHER_API_KEY}`,
   );
 
+  /**
+   * 👀 Right now, the function only handles 200 and not-200 responses.
+   * It would be better to handle other status codes and react accordingly.
+   */
   if (response.status !== 200) {
     throw new WeatherAPIError("Failed to fetch weather for location");
   }
@@ -99,6 +107,10 @@ async function getFromLocation(city: string): Promise<Weather> {
   const { lat, lon } = await getCoordinates(city);
 
   return getWeatherFromLatLon(lat, lon);
+  /**
+   * 👀 With more time, I think it would be necessary to add more error handling
+   * and possibly retry logic.
+   */
 }
 
 export { getFromLocation, WEATHER_CONDITIONS, WeatherAPIError };

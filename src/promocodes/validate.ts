@@ -10,6 +10,12 @@ type Context = {
   date?: DateContext;
   weather?: WeatherContext;
 };
+
+/**
+ * 👀 ValidationResult is a recursive type that can contain a list of reasons
+ * if the validation fails, or a list of other ValidationResult for nested
+ * conditions.
+ */
 type ValidationResult = {
   condition: string;
   success: boolean;
@@ -21,7 +27,6 @@ function validateDate(
   date: Date,
 ): ValidationResult {
   const reasons: string[] = [];
-
   if (
     "after" in condition &&
     condition.after instanceof Date &&
@@ -139,6 +144,11 @@ function validateCondition(
   }
 
   if ("weather" in condition && "weather" in context && context.weather) {
+    /**
+     * 👀 I decided to give a context to the weather validation to avoid
+     * having to call the weather API multiple times in case of nested
+     * weather conditions in 'and' or 'or' conditions.
+     */
     return validateWeather(condition.weather, context.weather);
   }
 
@@ -148,7 +158,7 @@ function validateCondition(
     );
     return {
       condition: "or",
-      success: results.some((r) => r.success),
+      success: results.some((result) => result.success),
       reasons: results,
     };
   }
@@ -159,17 +169,21 @@ function validateCondition(
     );
     return {
       condition: "and",
-      success: results.every((r) => r.success),
+      success: results.every((result) => result.success),
       reasons: results,
     };
   }
 
   if (Array.isArray(condition)) {
+    /**
+     * 👀 The case where the condition is an array of conditions only happens
+     * when the object is the 'restrictions' property of a promocode.
+     */
     const result = condition.map((c) => validateCondition(c, context));
 
     return {
       condition: "main",
-      success: result.some((r) => r.success),
+      success: result.some((result) => result.success),
       reasons: result,
     };
   }
