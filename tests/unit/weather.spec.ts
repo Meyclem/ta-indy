@@ -1,5 +1,9 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { getFromLocation, WEATHER_CONDITIONS, WeatherAPIError } from "../../src/services/weather";
+import {
+  getFromLocation,
+  WEATHER_CONDITIONS,
+  WeatherAPIError,
+} from "../../src/services/weather";
 
 import type { MockedFunction } from "vitest";
 
@@ -10,13 +14,15 @@ function createFetchResponse(data = {}, status = 200) {
 }
 
 function mockFetch(data = {}, status = 200) {
-  (fetch as MockedFunction<any>).mockResolvedValueOnce(createFetchResponse(data, status));
+  (fetch as MockedFunction<(args: unknown) => unknown>).mockResolvedValueOnce(
+    createFetchResponse(data, status),
+  );
 }
 
 describe("Weather Service", () => {
   describe("#getFromLocation", () => {
     afterEach(() => {
-      (fetch as MockedFunction<any>).mockClear();
+      (fetch as MockedFunction<(args: unknown) => unknown>).mockClear();
     });
 
     it("Throws an error if the geocode API doesn't respond with a 200", async () => {

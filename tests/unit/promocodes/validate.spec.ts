@@ -21,7 +21,9 @@ describe("Promocode Validation", () => {
       expect(result).toEqual({
         condition: "age",
         success: false,
-        reasons: [`Given age ${context.age} is not equal to ${condition.age.eq}`],
+        reasons: [
+          `Given age ${context.age} is not equal to ${condition.age.eq}`,
+        ],
       });
     });
 
@@ -44,7 +46,9 @@ describe("Promocode Validation", () => {
       expect(result).toEqual({
         condition: "age",
         success: false,
-        reasons: [`Given age ${context.age} is not less than ${condition.age.lt}`],
+        reasons: [
+          `Given age ${context.age} is not less than ${condition.age.lt}`,
+        ],
       });
     });
   });
@@ -110,7 +114,9 @@ describe("Promocode Validation", () => {
       const condition = {
         weather: { is: WEATHER_CONDITIONS.CLEAR, temp: { eq: 10 } },
       };
-      const context = { weather: { city: "London", main: WEATHER_CONDITIONS.CLEAR, temp: 10 } };
+      const context = {
+        weather: { city: "London", main: WEATHER_CONDITIONS.CLEAR, temp: 10 },
+      };
 
       const result = validateCondition(condition, context);
 
@@ -121,7 +127,9 @@ describe("Promocode Validation", () => {
       const condition = {
         weather: { is: WEATHER_CONDITIONS.CLEAR, temp: { eq: 10 } },
       };
-      const context = { weather: { city: "London", main: WEATHER_CONDITIONS.RAIN, temp: 10 } };
+      const context = {
+        weather: { city: "London", main: WEATHER_CONDITIONS.RAIN, temp: 10 },
+      };
 
       const result = validateCondition(condition, context);
 
@@ -138,7 +146,9 @@ describe("Promocode Validation", () => {
       const condition = {
         weather: { is: WEATHER_CONDITIONS.CLEAR, temp: { eq: 10 } },
       };
-      const context = { weather: { city: "London", main: WEATHER_CONDITIONS.CLEAR, temp: 20 } };
+      const context = {
+        weather: { city: "London", main: WEATHER_CONDITIONS.CLEAR, temp: 20 },
+      };
 
       const result = validateCondition(condition, context);
 
@@ -159,7 +169,9 @@ describe("Promocode Validation", () => {
       const condition = {
         weather: { is: WEATHER_CONDITIONS.CLEAR, temp: { eq: 10 } },
       };
-      const context = { weather: { city: "London", main: WEATHER_CONDITIONS.RAIN, temp: 20 } };
+      const context = {
+        weather: { city: "London", main: WEATHER_CONDITIONS.RAIN, temp: 20 },
+      };
 
       const result = validateCondition(condition, context);
 
@@ -193,9 +205,17 @@ describe("Promocode Validation", () => {
         condition: "or",
         success: true,
         reasons: [
-          { condition: "age", success: false, reasons: [`Given age ${context.age} is not equal to 25`] },
+          {
+            condition: "age",
+            success: false,
+            reasons: [`Given age ${context.age} is not equal to 25`],
+          },
           { condition: "age", success: true },
-          { condition: "age", success: false, reasons: [`Given age ${context.age} is not greater than 75`] },
+          {
+            condition: "age",
+            success: false,
+            reasons: [`Given age ${context.age} is not greater than 75`],
+          },
         ],
       });
     });

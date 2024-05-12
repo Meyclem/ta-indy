@@ -21,7 +21,9 @@ type Weather = {
 
 class WeatherAPIError extends Error {}
 
-async function getCoordinates(city: string): Promise<{ lat: number; lon: number }> {
+async function getCoordinates(
+  city: string,
+): Promise<{ lat: number; lon: number }> {
   const response = await fetch(
     `http://api.openweathermap.org/geo/1.0/direct?q=${city}&appid=${process.env.OPEN_WEATHER_API_KEY}`,
   );
@@ -50,7 +52,10 @@ async function getCoordinates(city: string): Promise<{ lat: number; lon: number 
   return { lat, lon };
 }
 
-async function getWeatherFromLatLon(lat: number, lon: number): Promise<Weather> {
+async function getWeatherFromLatLon(
+  lat: number,
+  lon: number,
+): Promise<Weather> {
   const response = await fetch(
     `http://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${process.env.OPEN_WEATHER_API_KEY}`,
   );

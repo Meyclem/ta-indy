@@ -11,10 +11,6 @@ function createFetchResponse(data = {}, status = 200) {
   return { json: () => new Promise((resolve) => resolve(data)), status };
 }
 
-function mockFetchResponse(data = {}, status = 200) {
-  (fetch as MockedFunction<any>).mockResolvedValueOnce(createFetchResponse(data, status));
-}
-
 const london = [
   {
     lat: 51.5073219,
@@ -34,14 +30,16 @@ const weather = {
 };
 
 function mockFetchWeatherAPICall(latLon = london, weatherData = weather) {
-  (fetch as MockedFunction<any>).mockImplementation((args) => {
-    if (args && typeof args === "string" && args.includes("geo")) {
-      return createFetchResponse(latLon, 200);
-    }
-    if (args && typeof args === "string" && args.includes("weather")) {
-      return createFetchResponse(weatherData, 200);
-    }
-  });
+  (fetch as MockedFunction<(args: unknown) => unknown>).mockImplementation(
+    (args) => {
+      if (args && typeof args === "string" && args.includes("geo")) {
+        return createFetchResponse(latLon, 200);
+      }
+      if (args && typeof args === "string" && args.includes("weather")) {
+        return createFetchResponse(weatherData, 200);
+      }
+    },
+  );
 }
 
 const beachPromocode = {
@@ -73,7 +71,9 @@ describe("POST /promocodes", () => {
   });
 
   it("Responds with 400 if advantage and restrictions are not present", async () => {
-    const response = await request(app).post("/promocodes").send({ name: "Invalid" });
+    const response = await request(app)
+      .post("/promocodes")
+      .send({ name: "Invalid" });
 
     expect(response.status).toEqual(400);
     expect(response.body).toEqual({
@@ -223,7 +223,10 @@ describe("POST /promocodes/validate", () => {
       },
     };
 
-    mockFetchWeatherAPICall(london, { ...weather, weather: [{ main: WEATHER_CONDITIONS.RAIN }] });
+    mockFetchWeatherAPICall(london, {
+      ...weather,
+      weather: [{ main: WEATHER_CONDITIONS.RAIN }],
+    });
     const response = await request(app).post("/promocodes/validate").send(body);
 
     expect(response.status).toEqual(200);
@@ -231,7 +234,11 @@ describe("POST /promocodes/validate", () => {
       promocode_name: "Beach",
       status: "rejected",
       reasons: [
-        { condition: "weather", success: false, reasons: ["Current weather for London 'Rain' is not 'Clear'"] },
+        {
+          condition: "weather",
+          success: false,
+          reasons: ["Current weather for London 'Rain' is not 'Clear'"],
+        },
       ],
     });
   });
@@ -276,7 +283,9 @@ describe("POST /promocodes/validate", () => {
             return {
               condition: "age",
               success: false,
-              reasons: [`Given age ${body.arguments.age} is not equal to ${condition.age.eq}`],
+              reasons: [
+                `Given age ${body.arguments.age} is not equal to ${condition.age.eq}`,
+              ],
             };
           }),
         },

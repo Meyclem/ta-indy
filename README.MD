@@ -38,8 +38,6 @@ Then install the dependencies:
 yarn install
 ```
 
-<!-- TODO: Complete -->
-
 ### Build the JS files
 
 ```bash
@@ -85,3 +83,13 @@ yarn test:integration
 ```
 
 ## Architecture
+
+The main components of the project are:
+
+- [src/index.ts](./src/index.ts): This is the entry point of the application. It sets up the server and ties all the other modules together.
+- [src/server.ts](./src/server.ts): This module sets up the Express.js server and the API routes.
+- [src/promocodes/](./src/promocodes/): This directory contains the logic related to promocodes. It includes:
+  - [handlers.ts](./src/promocodes/handlers.ts): This file contains the handlers for the promocode-related routes.
+  - [model.ts](./src/promocodes/model.ts): This file defines the data model for a promocode.
+  - [validate.ts](./src/promocodes/validate.ts): This file contains the logic for validating promocodes.
+- [src/services/weather.ts](./src/services/weather.ts): This module interacts with the weather API.

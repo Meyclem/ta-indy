@@ -1,19 +1,27 @@
 import { Request, Response, Handler } from "express";
 import { z } from "zod";
 
-import { numberComparisonSchema, dateRangeSchema, weatherComparisonSchema, Condition, Promocode } from "./model.js";
+import {
+  numberComparisonSchema,
+  dateRangeSchema,
+  weatherComparisonSchema,
+  Condition,
+  Promocode,
+} from "./model.js";
 import { validateCondition } from "./validate.js";
 import { WeatherAPIError, getFromLocation } from "../services/weather.js";
 import InMemoryDatabase from "../inmemory-database.js";
 
 class PromocodeNotFoundError extends Error {}
 
-function promocodeValidation(promocode: any): Promocode {
+function promocodeValidation(promocode: Promocode): Promocode {
   return z
     .object({
       name: z.string(),
       advantage: z.object({ percent: z.number() }),
-      restrictions: z.array(z.any()).refine(conditionValidation, "Invalid list of conditions"),
+      restrictions: z
+        .array(z.any())
+        .refine(conditionValidation, "Invalid list of conditions"),
     })
     .parse(promocode);
 }
@@ -63,7 +71,9 @@ function create(database: InMemoryDatabase): Handler {
       return response.status(201).json(promocodeData);
     } catch (error) {
       if (error instanceof z.ZodError) {
-        return response.status(400).json({ message: "Invalid request body", details: error.issues });
+        return response
+          .status(400)
+          .json({ message: "Invalid request body", details: error.issues });
       }
 
       return response.status(500).json({ message: "Internal Server Error" });
@@ -103,7 +113,15 @@ function validate(database: InMemoryDatabase): Handler {
 
       const results = validateCondition(promocode.restrictions, {
         ...context,
-        ...(weather && town ? { weather: { city: town, main: weather.weather, temp: weather.temp } } : {}),
+        ...(weather && town
+          ? {
+              weather: {
+                city: town,
+                main: weather.weather,
+                temp: weather.temp,
+              },
+            }
+          : {}),
       });
 
       return response.status(200).json({
@@ -122,7 +140,9 @@ function validate(database: InMemoryDatabase): Handler {
       }
 
       if (error instanceof WeatherAPIError) {
-        return response.status(500).json({ message: "Failed to fetch weather data" });
+        return response
+          .status(500)
+          .json({ message: "Failed to fetch weather data" });
       }
 
       return response.status(500).json({ message: "Internal Server Error" });
