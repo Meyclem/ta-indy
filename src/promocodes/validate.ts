@@ -71,7 +71,7 @@ function validateWeather(
   return { condition: "weather", success: reasons.length === 0, ...(reasons.length > 0 && { reasons }) };
 }
 
-function validateCondition(condition: Condition, context: Context): ValidationResult {
+function validateCondition(condition: Condition | Condition[], context: Context): ValidationResult {
   if ("age" in condition && "age" in context && typeof context.age === "number") {
     return validateNumber(condition.age, context.age, "age");
   }
@@ -99,6 +99,16 @@ function validateCondition(condition: Condition, context: Context): ValidationRe
       condition: "and",
       success: results.every((r) => r.success),
       reasons: results,
+    };
+  }
+
+  if (Array.isArray(condition)) {
+    const result = condition.map((c) => validateCondition(c, context));
+
+    return {
+      condition: "main",
+      success: result.some((r) => r.success),
+      reasons: result,
     };
   }
 

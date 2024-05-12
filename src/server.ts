@@ -2,7 +2,9 @@ import cors from "cors";
 import express, { Request, Response } from "express";
 import helmet from "helmet";
 import morgan from "morgan";
+
 import InMemoryDatabase from "./inmemory-database.js";
+import promocodeHandlers from "./promocodes/handlers.js";
 
 function createApp(database: InMemoryDatabase) {
   const app = express();
@@ -15,6 +17,9 @@ function createApp(database: InMemoryDatabase) {
   app.get("/_healthz", (request: Request, response: Response) => {
     response.status(200).json({ message: "OK" });
   });
+
+  app.post("/promocodes", promocodeHandlers.create(database));
+  app.post("/promocodes/validate", promocodeHandlers.validate(database));
 
   app.get("*", (request: Request, response: Response) => {
     response.status(404).json({ message: "Not Found" });
