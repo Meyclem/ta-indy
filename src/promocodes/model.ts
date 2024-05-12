@@ -24,4 +24,10 @@ type Condition =
   | { or: Condition[] }
   | { and: Condition[] };
 
-export type { Condition };
+type Promocode = {
+  name: string;
+  advantage: { percent: number };
+  restrictions: Condition[];
+};
+
+export type { Condition, Promocode };

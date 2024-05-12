@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 import request from "supertest";
-import app from "../../src/server";
+import createApp from "../../src/server";
+import InMemoryDatabase from "../../src/inmemory-database";
+
+const database = new InMemoryDatabase({ promocodes: [] });
+const app = createApp(database);
 
 describe("GET /_healthz", () => {
   it("Responds with 200 OK", async () => {
