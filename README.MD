@@ -129,11 +129,7 @@ type Context = {
   type Response = {
     promocode_name: string;
     status: "rejected";
-    reasons: {
-      condition: string;
-      success: boolean;
-      reasons: string[] | ValidationResult[];
-    }[];
+    reasons: ValidationResult[];
   };
   ```
 
