@@ -132,7 +132,7 @@ type Context = {
     reasons: {
       condition: string;
       success: boolean;
-      reasons: string[] | Response[];
+      reasons: string[] | ValidationResult[];
     }[];
   };
   ```
